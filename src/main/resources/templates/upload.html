@@ -5,14 +5,54 @@ To change this template file, choose Tools | Templates
 and open the template in the editor.
 -->
 <html xmlns:th="http://www.thymeleaf.org">
+    <head>
+        <div th:replace="fragments/header :: header-css"></div>
+    </head>
     <body>
 
     <h1>Spring Boot file upload example</h1>
 
-    <form method="POST" action="/doupload" enctype="multipart/form-data">
+    <form method="POST" th:action="@{/doupload(${_csrf.parameterName}=${_csrf.token})}" enctype="multipart/form-data">
         <input type="file" name="file" /><br/><br/>
         <input type="submit" value="Submit" />
     </form>
+    
+    <select class="js-data-example-ajax" name="state">
+<!--        <option value="AL">Alabama</option>
 
+        <option value="WY">Wyoming</option>-->
+    </select>
+            <div th:replace="fragments/header :: header-js"></div>
+    
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.6-rc.0/js/select2.min.js"></script>
+        <script>
+            $(document).ready(function() {
+                
+                /*$('.js-data-example-ajax').select2({
+                    ajax: {
+                    url: 'main/some',
+                    dataType: 'json'
+                    // Additional AJAX parameters go here; see the end of this chapter for the full code of this example
+                  }
+                });*/
+                
+                
+                $.ajax({
+                    url : 'main/some',
+                    dataType : 'JSON',
+                    success: function(msg) { 
+                        msg.forEach(function(v,i) {
+                            let x = document.createElement('OPTION');
+                            x.value = v.type_id;
+                            x.innerHTML = v.type_name;
+                            
+                            document.querySelector('.js-data-example-ajax').appendChild(x);
+                        });
+                        
+                        $('.js-data-example-ajax').select2();
+                    },
+                });
+            });
+        </script>
     </body>
 </html>

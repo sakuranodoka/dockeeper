@@ -65,6 +65,8 @@
         <dependency>
             <groupId>com.unboundid</groupId>
             <artifactId>unboundid-ldapsdk</artifactId>
+            <version>3.2.1</version>
+            <type>jar</type>
         </dependency>
         
         <dependency>
@@ -97,10 +99,18 @@
             <artifactId>sqljdbc4</artifactId>
             <version>4.0</version>
         </dependency>
-       
-        
+        <dependency>
+            <groupId>com.google</groupId>
+            <artifactId>com.google.google-collect</artifactId>
+            <version>1.0-rc1</version>
+            <type>jar</type>
+        </dependency>
+        <dependency>
+            <groupId>org.json</groupId>
+            <artifactId>json</artifactId>
+            <version>20171018</version>
+        </dependency>
 
-        
     </dependencies>
 
     <build>

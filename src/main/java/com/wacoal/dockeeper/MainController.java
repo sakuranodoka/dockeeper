@@ -9,12 +9,19 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.wacoal.dockeeper.wsdl.EmpClass;
 import com.wacoal.dockeeper.wsdl.GetEmpByFilterResponse;
+import java.sql.CallableStatement;
 import java.sql.Connection;
 import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
+import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import javax.sql.DataSource;
+import org.json.JSONArray;
+import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -75,11 +82,50 @@ public class MainController {
     ) throws Exception {
         Connection con = this.datasource.getConnection();
         Statement stmt = con.createStatement();
-        ResultSet res = stmt.executeQuery("select * from tb_attach");
-        while(res.next()) {
-            int cCount = res.getMetaData().getColumnCount();
-            System.out.println(cCount);
+        ResultSet res = stmt.executeQuery("select * from ms_type");
+//        while(res.next()){
+//            //System.out.println(res.getString("type_id")+"|"+res.getString("type_name"));
+//            //System.out.println("Hellow\n");
+//        }
+        
+        JSONArray arr = convertResultSetIntoJSON(res);
+        
+        List<String> list = new ArrayList<String>();
+        for(int i = 0; i < arr.length(); i++) {
+            //list.add(arr.getJSONObject(i).getString("name"));
         }
-        return "";
+        
+        //System.out.println(arr.toString());
+        
+        res.close();
+        stmt.close();
+        
+        CallableStatement func = con.prepareCall("");
+        
+        con.close();
+        return arr.toString();
+    }
+    
+    public static JSONArray convertResultSetIntoJSON(ResultSet resultSet) throws Exception {
+        JSONArray jsonArray = new JSONArray();
+        while (resultSet.next()) {
+            int total_rows = resultSet.getMetaData().getColumnCount();
+            JSONObject obj = new JSONObject();
+            for (int i = 0; i < total_rows; i++) {
+                String columnName = resultSet.getMetaData().getColumnLabel(i + 1).toLowerCase();
+                Object columnValue = resultSet.getObject(i + 1);
+                // if value in DB is null, then we set it to default value
+                if (columnValue == null) {
+                    columnValue = "null";
+                }
+ 
+                if (obj.has(columnName)) {
+                    columnName += "1";
+                }
+                obj.put(columnName, columnValue);
+            }
+            jsonArray.put(obj);
+        }
+        return jsonArray;
     }
 }
